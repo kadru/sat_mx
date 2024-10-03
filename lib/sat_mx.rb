@@ -4,5 +4,5 @@ require_relative "sat_mx/version"
 
 module SatMx
   class Error < StandardError; end
-  # Your code goes here...
+  autoload(:BulkDownload, "sat_mx/bulk_download")
 end

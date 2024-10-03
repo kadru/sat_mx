@@ -35,6 +35,9 @@ Gem::Specification.new do |spec|
   spec.add_dependency "xmldsig", "< 1.0"
   spec.add_dependency "httpx", "~> 1.3"
   spec.add_development_dependency "standard"
+  spec.add_development_dependency "debug"
+  spec.add_development_dependency "webmock"
+  spec.add_development_dependency "timecop"
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html
