@@ -119,13 +119,13 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
-  debug
+  debug (~> 1.9)
   rake (~> 13.0)
   rspec (~> 3.0)
   sat_mx!
-  standard (~> 1.3)
-  timecop
-  webmock
+  standard (~> 1.4)
+  timecop (~> 0.9)
+  webmock (~> 3.24)
 
 BUNDLED WITH
    2.5.15

@@ -15,7 +15,6 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = ">= 3.0.0"
 
   spec.metadata["homepage_uri"] = spec.homepage
-  spec.metadata["source_code_uri"] = "https://github.com/kadru/sat_mx"
   spec.metadata["changelog_uri"] = "https://github.com/kadru/sat_mx/CHANGELOG.md"
 
   # Specify which files should be added to the gem when it is released.
@@ -34,10 +33,10 @@ Gem::Specification.new do |spec|
   # Uncomment to register a new dependency of your gem
   spec.add_dependency "xmldsig", "< 1.0"
   spec.add_dependency "httpx", "~> 1.3"
-  spec.add_development_dependency "standard"
-  spec.add_development_dependency "debug"
-  spec.add_development_dependency "webmock"
-  spec.add_development_dependency "timecop"
+  spec.add_development_dependency "standard", "~> 1.4"
+  spec.add_development_dependency "debug", "~> 1.9"
+  spec.add_development_dependency "webmock", "~> 3.24"
+  spec.add_development_dependency "timecop", "~> 0.9"
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html
