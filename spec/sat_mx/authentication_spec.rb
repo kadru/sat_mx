@@ -1,6 +1,6 @@
 require "spec_helper"
 
-RSpec.describe SatMx::BulkDownload do
+RSpec.describe SatMx::Authentication do
   let(:certificate) do
     OpenSSL::X509::Certificate.new(
       fixture("local_business/2526_mifiel_local_business.cer")
@@ -31,7 +31,7 @@ RSpec.describe SatMx::BulkDownload do
 
     it "returns the authenticate response" do
       stub_authentication_success
-      result = SatMx::BulkDownload.authenticate(
+      result = SatMx::Authentication.authenticate(
         certificate:,
         private_key:,
         id: "uuid-17368d82-4a74-4bc2-8ed1-3e9e490e5433-1"
@@ -45,7 +45,7 @@ RSpec.describe SatMx::BulkDownload do
       it "returns a unsuccessful result" do
         stub_authentication_failure
 
-        result = SatMx::BulkDownload.authenticate(
+        result = SatMx::Authentication.authenticate(
           certificate:,
           private_key:,
           id: "uuid-17368d82-4a74-4bc2-8ed1-3e9e490e5433-1"
