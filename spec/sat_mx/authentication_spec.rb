@@ -15,11 +15,11 @@ RSpec.describe SatMx::Authentication do
   end
 
   let(:success_response) do
-    Nokogiri::XML::Document.parse(fixture("bulk_download/success_response.xml"))
+    Nokogiri::XML::Document.parse(fixture("authentication/success_response.xml"))
   end
 
   let(:failure_auth_response) do
-    Nokogiri::XML::Document.parse(fixture("bulk_download/failure_auth_response.xml"))
+    Nokogiri::XML::Document.parse(fixture("authentication/failure_auth_response.xml"))
   end
 
   describe ".authenticate" do
@@ -74,7 +74,7 @@ RSpec.describe SatMx::Authentication do
           "x-frame-options" => "SAMEORIGIN",
           "date" => "Mon, 30 Sep 2024 20:30:10 GMT"
         },
-        body: fixture("bulk_download/success_response.xml")
+        body: fixture("authentication/success_response.xml")
       )
   end
 
@@ -92,7 +92,7 @@ RSpec.describe SatMx::Authentication do
           "date" => "Thu, 03 Oct 2024 19:50:16 GMT",
           "content-length" => "347"
         },
-        body: fixture("bulk_download/failure_auth_response.xml")
+        body: fixture("authentication/failure_auth_response.xml")
       )
   end
 
@@ -108,7 +108,7 @@ RSpec.describe SatMx::Authentication do
         "Soapaction" => "http://DescargaMasivaTerceros.gob.mx/IAutenticacion/Autentica"
       },
       body: Nokogiri::XML(
-        fixture("bulk_download/auth_request.xml"),
+        fixture("authentication/auth_request.xml"),
         nil,
         nil,
         Nokogiri::XML::ParseOptions::STRICT
