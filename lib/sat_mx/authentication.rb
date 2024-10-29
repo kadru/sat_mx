@@ -4,8 +4,6 @@ require "xmldsig"
 require "time"
 
 module SatMx
-  Result = Data.define(:success?, :value)
-
   class Authentication
     AUTH_URL = "https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/Autenticacion/Autenticacion.svc".freeze
     HEADERS = {

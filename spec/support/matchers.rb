@@ -1,6 +1,6 @@
 # expects a Nokogiri::XML::Document
-RSpec::Matchers.define :be_same_xml do |xml_doc|
-  match do |xml_to_match|
-    xml_to_match.canonicalize == xml_doc.canonicalize
+RSpec::Matchers.define :be_same_xml do |expected|
+  match do |actual|
+    actual.canonicalize == expected.canonicalize
   end
 end
