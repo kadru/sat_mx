@@ -9,6 +9,7 @@ require "webmock/rspec"
 require "timecop"
 require "support/matchers"
 require "support/fixture_helper"
+require "support/network_stubs"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

@@ -55,7 +55,14 @@ module SatMx
         end
       )
 
-      Result.new(success?: true, value: response.xml)
+      case response.status
+      when 200..299
+        Result.new(success?: true, value: response.xml)
+      when 400..599
+        Result.new(success?: false, value: response.xml)
+      else
+        SatMx::Error
+      end
     end
 
     private
