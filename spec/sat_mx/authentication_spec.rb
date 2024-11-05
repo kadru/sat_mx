@@ -38,7 +38,8 @@ RSpec.describe SatMx::Authentication do
       )
 
       expect(result).to be_success
-      expect(result.value).to be_same_xml(success_response)
+      expect(result.value).to eq("eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE3Mjc3MzczMTAsImV4cCI6MTcyNzczNzkxMCwiaWF0IjoxNzI3NzM3MzEwLCJpc3MiOiJMb2FkU29saWNpdHVkRGVjYXJnYU1hc2l2YVRlcmNlcm9zIiwiYWN0b3J0IjoiMzAzMDMwMzAzMTMwMzAzMDMwMzAzMDM3MzAzMDMzMzkzMjMwMzgzOSJ9.wOLFgZBRCIy09aKJZD2hiAUt_TjPwHYCIDQCVzKP_78%26wrap_subject%3d3030303031303030303030373030333932303839")
+      expect(result.xml).to be_same_xml(success_response)
     end
 
     context "when authentication fails" do
@@ -52,7 +53,7 @@ RSpec.describe SatMx::Authentication do
         )
 
         expect(result).not_to be_success
-        expect(result.value).to be_same_xml(failure_auth_response)
+        expect(result.xml).to be_same_xml(failure_auth_response)
       end
     end
   end

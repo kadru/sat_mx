@@ -1,3 +1,3 @@
 module SatMx
-  Result = Data.define(:success?, :value)
+  Result = Data.define(:success?, :value, :xml)
 end

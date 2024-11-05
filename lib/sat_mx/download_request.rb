@@ -57,9 +57,12 @@ module SatMx
 
       case response.status
       when 200..299
-        Result.new(success?: true, value: response.xml)
+        Result.new(success?: true,
+          value: response.xml.xpath("//xmlns:SolicitaDescargaResult",
+            xmlns: "http://DescargaMasivaTerceros.sat.gob.mx").attribute("IdSolicitud").value,
+          xml: response.xml)
       when 400..599
-        Result.new(success?: false, value: response.xml)
+        Result.new(success?: false, value: nil, xml: response.xml)
       else
         SatMx::Error
       end

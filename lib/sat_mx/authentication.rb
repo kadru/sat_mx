@@ -15,9 +15,24 @@ module SatMx
     private_constant :HEADERS
 
     def self.authenticate(certificate:, private_key:, id: nil)
-      new(
-        xml_auth_body: XmlAuthBody.new(certificate:, private_key:, id:)
-      ).authenticate
+      instance = if id.nil?
+        new(
+          xml_auth_body: XmlAuthBody.new(
+            certificate:,
+            private_key:
+          )
+        )
+      else
+        new(
+          xml_auth_body: XmlAuthBody.new(
+            certificate:,
+            private_key:,
+            id:
+          )
+        )
+      end
+
+      instance.authenticate
     end
 
     def initialize(xml_auth_body:)
@@ -33,9 +48,12 @@ module SatMx
 
       case response.status
       when 200..299
-        Result.new(success?: true, value: response.xml)
+        Result.new(success?: true,
+          value: response.xml.xpath("//xmlns:AutenticaResult",
+            xmlns: "http://DescargaMasivaTerceros.gob.mx").inner_text,
+          xml: response.xml)
       when 400..599
-        Result.new(success?: false, value: response.xml)
+        Result.new(success?: false, value: nil, xml: response.xml)
       else
         SatMx::Error
       end

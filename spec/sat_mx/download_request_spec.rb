@@ -36,7 +36,8 @@ RSpec.describe SatMx::DownloadRequest do
       )
 
       expect(result).to be_success
-      expect(result.value).to be_same_xml(expected_body)
+      expect(result.value).to eq("43a72695-6684-4ca9-9cb5-62361528c354")
+      expect(result.xml).to be_same_xml(expected_body)
     end
 
     context "when request fails" do
