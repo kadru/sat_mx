@@ -50,9 +50,7 @@ module SatMx
         headers: {
           "Authorization" => "WRAP access_token=\"#{access_token}\""
         }.merge(HEADERS),
-        body: Xmldsig::SignedDocument.new(xml_document).sign do |data|
-          private_key.sign(OpenSSL::Digest.new("SHA1"), data)
-        end
+        body: Signer.sign(document: xml_document, private_key:)
       )
 
       case response.status

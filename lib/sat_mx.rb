@@ -7,4 +7,5 @@ module SatMx
   autoload(:Authentication, "sat_mx/authentication")
   autoload(:DownloadRequest, "sat_mx/download_request")
   autoload(:Result, "sat_mx/result")
+  autoload(:Signer, "sat_mx/signer")
 end

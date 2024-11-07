@@ -18,32 +18,33 @@ module SatMx
       instance = if id.nil?
         new(
           xml_auth_body: XmlAuthBody.new(
-            certificate:,
-            private_key:
-          )
+            certificate:
+          ),
+          private_key:
         )
       else
         new(
           xml_auth_body: XmlAuthBody.new(
             certificate:,
-            private_key:,
             id:
-          )
+          ),
+          private_key:
         )
       end
 
       instance.authenticate
     end
 
-    def initialize(xml_auth_body:)
+    def initialize(xml_auth_body:, private_key:)
       @xml_auth_body = xml_auth_body
+      @private_key = private_key
     end
 
     def authenticate
       response = HTTPX.post(
         AUTH_URL,
         headers: HEADERS,
-        body: xml_auth_body.sign
+        body: Signer.sign(document: xml_auth_body.generate, private_key:)
       )
 
       case response.status
@@ -61,27 +62,16 @@ module SatMx
 
     private
 
-    attr_reader :xml_auth_body
+    attr_reader :xml_auth_body, :private_key
   end
 
   class XmlAuthBody
-    def initialize(certificate:, private_key:, id: "uuid-#{SecureRandom.uuid}-1")
+    def initialize(certificate:, id: "uuid-#{SecureRandom.uuid}-1")
       @certificate = certificate
-      @private_key = private_key
       @id = id
     end
 
-    def sign
-      Xmldsig::SignedDocument.new(xml_document).sign do |data|
-        private_key.sign(OpenSSL::Digest.new("SHA1"), data)
-      end
-    end
-
-    private
-
-    attr_reader :private_key, :certificate, :id
-
-    def xml_document
+    def generate
       <<~XML
         <S11:Envelope xmlns:S11="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
           <S11:Header>
@@ -105,6 +95,10 @@ module SatMx
         </S11:Envelope>
       XML
     end
+
+    private
+
+    attr_reader :certificate, :id
 
     def timestamp
       current_time = Time.now.utc
