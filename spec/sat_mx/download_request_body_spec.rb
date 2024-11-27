@@ -1,6 +1,4 @@
 require "sat_mx/download_request_body"
-require "compare-xml"
-require "nokogiri/diff"
 require "nokogiri"
 
 RSpec.describe SatMx::DownloadRequestBody do
@@ -11,7 +9,7 @@ RSpec.describe SatMx::DownloadRequestBody do
   end
 
   describe "#generate" do
-    fit do
+    it do
       start_date = Time.new(2024, 10, 1)
       end_date = Time.new(2024, 10, 21)
       request_type = :cfdi
