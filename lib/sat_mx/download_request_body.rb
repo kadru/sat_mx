@@ -1,5 +1,4 @@
 require "time"
-require "base64"
 
 module SatMx
   class DownloadRequestBody
@@ -9,13 +8,6 @@ module SatMx
       cfdi: "CFDI",
       metadata: "Metadata"
     }.freeze
-    S11 = "S11"
-    XMLNS = "xmlns"
-    DES = "des"
-    private_constant :REQUEST_TYPES
-    private_constant :S11
-    private_constant :XMLNS
-    private_constant :DES
 
     def initialize(start_date:,
       end_date:,
@@ -36,9 +28,7 @@ module SatMx
     def generate
       Nokogiri::XML::Builder.new do |xml|
         xml[S11].Envelope(
-          "#{XMLNS}:#{S11}" => "http://schemas.xmlsoap.org/soap/envelope/",
-          "#{XMLNS}:des" => "http://DescargaMasivaTerceros.sat.gob.mx",
-          "#{XMLNS}:ds" => "http://www.w3.org/2000/09/xmldsig#"
+          ENVELOPE_ATTRS
         ) do
           xml[S11].Header
           xml[S11].Body do

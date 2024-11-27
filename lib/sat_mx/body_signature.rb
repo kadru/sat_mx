@@ -1,3 +1,4 @@
+require "base64"
 require "sat_mx/body_constants"
 
 module SatMx

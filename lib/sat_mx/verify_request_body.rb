@@ -1,4 +1,3 @@
-require "base64"
 require "sat_mx/body_constants"
 
 module SatMx
@@ -14,9 +13,7 @@ module SatMx
     def generate
       Nokogiri::XML::Builder.new do |xml|
         xml[S11].Envelope(
-          "#{XMLNS}:#{S11}" => "http://schemas.xmlsoap.org/soap/envelope/",
-          "#{XMLNS}:des" => "http://DescargaMasivaTerceros.sat.gob.mx",
-          "#{XMLNS}:ds" => "http://www.w3.org/2000/09/xmldsig#"
+          ENVELOPE_ATTRS
         ) do
           xml[S11].Header
           xml[S11].Body do
