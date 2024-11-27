@@ -72,6 +72,63 @@ module NetworkStubs
         }
       )
   end
+
+  def stub_authentication_success
+    stub_auth_service
+      .to_return(
+        status: 200,
+        headers: {
+          "content-type" => "text/xml; charset=utf-8",
+          "content-encoding" => "gzip",
+          "vary" => "Accept-Encoding",
+          "server" => "Microsoft-IIS/10.0",
+          "x-content-type-options" => "nosniff",
+          "x-xss-protection" => "1",
+          "strict-transport-security" => "max-age=31536000; includeSubDomains",
+          "x-frame-options" => "SAMEORIGIN",
+          "date" => "Mon, 30 Sep 2024 20:30:10 GMT"
+        },
+        body: fixture("authentication/success_response.xml")
+      )
+  end
+
+  def stub_authentication_failure
+    stub_auth_service
+      .to_return(
+        status: 500,
+        headers: {
+          "content-type" => "text/xml; charset=utf-8",
+          "server" => "Microsoft-IIS/10.0",
+          "x-content-type-options" => "nosniff",
+          "x-xss-protection" => "1",
+          "strict-transport-security" => "max-age=31536000; includeSubDomains",
+          "x-frame-options" => "SAMEORIGIN",
+          "date" => "Thu, 03 Oct 2024 19:50:16 GMT",
+          "content-length" => "347"
+        },
+        body: fixture("authentication/failure_auth_response.xml")
+      )
+  end
+
+  def stub_auth_service
+    stub_request(
+      :post,
+      "https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/Autenticacion/Autenticacion.svc"
+    ).with(
+      headers: {
+        "Accept" => "text/xml",
+        "Accept-Encoding" => "gzip, deflate",
+        "Content-Type" => "text/xml; charset=utf-8",
+        "Soapaction" => "http://DescargaMasivaTerceros.gob.mx/IAutenticacion/Autentica"
+      },
+      body: Nokogiri::XML(
+        fixture("authentication/auth_request.xml"),
+        nil,
+        nil,
+        Nokogiri::XML::ParseOptions::STRICT
+      ).to_xml(save_with: Nokogiri::XML::Node::SaveOptions::AS_XML)
+    )
+  end
 end
 
 RSpec.configure do |config|
