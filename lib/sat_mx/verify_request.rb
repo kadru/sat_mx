@@ -1,3 +1,5 @@
+require "httpx"
+
 module SatMx
   class VerifyRequest
     URL = "https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/VerificaSolicitudDescargaService.svc"
@@ -8,6 +10,15 @@ module SatMx
     }.freeze
     private_constant :URL
     private_constant :HEADERS
+
+    STATUS = {
+      "1" => :accepted,
+      "2" => :in_proccess,
+      "3" => :finished,
+      "4" => :error,
+      "5" => :rejected,
+      "6" => :expired
+    }
 
     def self.call(request_id:, requester_rfc:, access_token:, private_key:, certificate:)
       new(
@@ -32,10 +43,27 @@ module SatMx
         URL,
         headers: {
           "Authorization" => "WRAP access_token=\"#{access_token}\""
-        }.merge(HEADERS)
-      ).body(Signer.sign(document: xml_document, private_key:))
+        }.merge(HEADERS),
+        body: Signer.sign(document: xml_document, private_key:)
+      )
 
-      Result.new(success?: true, value: :accepted, xml: Nokogiri::XML(""))
+      case response.status
+      when 200..299
+        status = STATUS.fetch(
+          response.xml.xpath(
+            "//xmlns:VerificaSolicitudDescargaResult",
+            xmlns: "http://DescargaMasivaTerceros.sat.gob.mx"
+          )
+          .attribute("EstadoSolicitud").value
+        )
+        Result.new(success?: true,
+          value: status,
+          xml: response.xml)
+      when 400..599
+        Result.new(success?: false, value: nil, xml: response.xml)
+      else
+        SatMx::Error
+      end
     end
 
     private

@@ -1,6 +1,4 @@
-require "openssl"
 require "httpx"
-require "xmldsig"
 require "time"
 
 module SatMx
