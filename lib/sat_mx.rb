@@ -11,4 +11,5 @@ module SatMx
   autoload(:BodySignature, "sat_mx/body_signature")
   autoload(:Result, "sat_mx/result")
   autoload(:Signer, "sat_mx/signer")
+  autoload(:Client, "sat_mx/client")
 end

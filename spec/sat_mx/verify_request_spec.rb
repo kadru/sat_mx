@@ -18,25 +18,61 @@ RSpec.describe SatMx::VerifyRequest do
   end
 
   describe ".call" do
+    let(:verify_request_response_body) do
+      <<~XML
+        <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+          <s:Body xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+            <VerificaSolicitudDescargaResponse xmlns="http://DescargaMasivaTerceros.sat.gob.mx">
+              <VerificaSolicitudDescargaResult CodEstatus="5000" EstadoSolicitud="1" CodigoEstadoSolicitud="5000" NumeroCFDIs="0" Mensaje="Solicitud Aceptada">
+              </VerificaSolicitudDescargaResult>
+            </VerificaSolicitudDescargaResponse>
+          </s:Body>
+        </s:Envelope>
+      XML
+    end
+
     it do
       stub_verify_request_success(access_token:, body: verify_request_response_body)
 
       result = described_class.call(request_id:, access_token:, requester_rfc:, private_key:, certificate:)
 
       expect(result).to be_success
-      expect(result.value).to eq(:accepted)
-      expect(result.xml).to be_same_xml(expected_body)
+      expect(result.value).to eq({
+        request_status: :accepted,
+        package_ids: []
+      })
+      expect(result.xml).to be_same_xml(parse_xml(verify_request_response_body))
     end
 
     context "when EstadoSolicitud is terminada" do
+      let(:verify_request_response_with_packages_ids) do
+        <<~XML
+          <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+            <s:Body xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+              <VerificaSolicitudDescargaResponse xmlns="http://DescargaMasivaTerceros.sat.gob.mx">
+                <VerificaSolicitudDescargaResult CodEstatus="5000" EstadoSolicitud="3" CodigoEstadoSolicitud="5000" NumeroCFDIs="0" Mensaje="Solicitud Aceptada">
+                  <IdsPaquetes>4e80345d-917f-40bb-a98f-4a73939343c5_01</IdsPaquetes>
+                  <IdsPaquetes>4e80345d-917f-40bb-a98f-4a73939343c5_02</IdsPaquetes>
+                </VerificaSolicitudDescargaResult>
+              </VerificaSolicitudDescargaResponse>
+            </s:Body>
+          </s:Envelope>
+        XML
+      end
+
       it "result value is finished" do
-        stub_verify_request_success(access_token:, body: verify_request_response_body(status: "3"))
+        stub_verify_request_success(access_token:, body: verify_request_response_with_packages_ids)
 
         result = described_class.call(request_id:, access_token:, requester_rfc:, private_key:, certificate:)
 
         expect(result).to be_success
-        expect(result.value).to eq(:finished)
-        expect(result.xml).to be_same_xml(expected_body(status: "3"))
+        expect(result.value).to eq({
+          request_status: :finished,
+          package_ids: %w[4e80345d-917f-40bb-a98f-4a73939343c5_01 4e80345d-917f-40bb-a98f-4a73939343c5_02]
+        })
+        expect(result.xml).to be_same_xml(parse_xml(verify_request_response_with_packages_ids))
       end
     end
 
@@ -54,20 +90,7 @@ RSpec.describe SatMx::VerifyRequest do
 
   private
 
-  def expected_body(status: "1")
-    Nokogiri::XML(verify_request_response_body(status:))
-  end
-
-  def verify_request_response_body(status: "1")
-    <<~XML
-      <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
-        <s:Body xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-          <VerificaSolicitudDescargaResponse xmlns="http://DescargaMasivaTerceros.sat.gob.mx">
-            <VerificaSolicitudDescargaResult CodEstatus="5000" EstadoSolicitud="#{status}" CodigoEstadoSolicitud="5000" NumeroCFDIs="0" Mensaje="Solicitud Aceptada"/>
-          </VerificaSolicitudDescargaResponse>
-        </s:Body>
-      </s:Envelope>
-    XML
+  def parse_xml(xml)
+    Nokogiri::XML(xml)
   end
 end
