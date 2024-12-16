@@ -33,6 +33,7 @@ Gem::Specification.new do |spec|
   # Uncomment to register a new dependency of your gem
   spec.add_dependency "xmldsig", "< 1.0"
   spec.add_dependency "httpx", "~> 1.3"
+  spec.add_dependency "base64", "< 1"
   spec.add_development_dependency "standard", "~> 1.4"
   spec.add_development_dependency "debug", "~> 1.9"
   spec.add_development_dependency "webmock", "~> 3.24"
