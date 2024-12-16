@@ -34,7 +34,7 @@ RSpec.describe SatMx::Authentication do
       result = SatMx::Authentication.authenticate(
         certificate:,
         private_key:,
-        id: "uuid-17368d82-4a74-4bc2-8ed1-3e9e490e5433-1"
+        uuid: "17368d82-4a74-4bc2-8ed1-3e9e490e5433"
       )
 
       expect(result).to be_success
@@ -49,7 +49,8 @@ RSpec.describe SatMx::Authentication do
         result = SatMx::Authentication.authenticate(
           certificate:,
           private_key:,
-          id: "uuid-17368d82-4a74-4bc2-8ed1-3e9e490e5433-1"
+
+          uuid: "17368d82-4a74-4bc2-8ed1-3e9e490e5433"
         )
 
         expect(result).not_to be_success

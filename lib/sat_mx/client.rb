@@ -13,6 +13,16 @@ module SatMx
       @access_token = access_token
     end
 
+    def authenticate(payload)
+      HTTPX.post(
+        "https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/Autenticacion/Autenticacion.svc",
+        headers: {
+          "SOAPAction" => "http://DescargaMasivaTerceros.gob.mx/IAutenticacion/Autentica"
+        }.merge(HEADERS),
+        body: sign(payload)
+      )
+    end
+
     def download_request(payload)
       HTTPX.post(
         "https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/SolicitaDescargaService.svc",
