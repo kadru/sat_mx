@@ -1,49 +1,29 @@
 require "httpx"
 require "time"
+require "base64"
 
 module SatMx
   class Authentication
-    AUTH_URL = "https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/Autenticacion/Autenticacion.svc".freeze
-    HEADERS = {
-      "content-type" => "text/xml; charset=utf-8",
-      "accept" => "text/xml",
-      "SOAPAction" => "http://DescargaMasivaTerceros.gob.mx/IAutenticacion/Autentica"
-    }.freeze
-    private_constant :AUTH_URL
-    private_constant :HEADERS
-
-    def self.authenticate(certificate:, private_key:, id: nil)
-      instance = if id.nil?
-        new(
-          xml_auth_body: XmlAuthBody.new(
-            certificate:
-          ),
-          private_key:
+    def self.authenticate(certificate:, private_key:, uuid: SecureRandom.uuid)
+      new(
+        xml_auth_body: XmlAuthBody.new(
+          certificate:,
+          uuid:
+        ),
+        client: Client.new(
+          private_key:,
+          access_token: ""
         )
-      else
-        new(
-          xml_auth_body: XmlAuthBody.new(
-            certificate:,
-            id:
-          ),
-          private_key:
-        )
-      end
-
-      instance.authenticate
+      ).authenticate
     end
 
-    def initialize(xml_auth_body:, private_key:)
+    def initialize(xml_auth_body:, client:)
       @xml_auth_body = xml_auth_body
-      @private_key = private_key
+      @client = client
     end
 
     def authenticate
-      response = HTTPX.post(
-        AUTH_URL,
-        headers: HEADERS,
-        body: Signer.sign(document: xml_auth_body.generate, private_key:)
-      )
+      response = client.authenticate(xml_auth_body.generate)
 
       case response.status
       when 200..299
@@ -60,13 +40,13 @@ module SatMx
 
     private
 
-    attr_reader :xml_auth_body, :private_key
+    attr_reader :xml_auth_body, :client
   end
 
   class XmlAuthBody
-    def initialize(certificate:, id: "uuid-#{SecureRandom.uuid}-1")
+    def initialize(certificate:, uuid:)
       @certificate = certificate
-      @id = id
+      @uuid = uuid
     end
 
     def generate
@@ -75,13 +55,13 @@ module SatMx
           <S11:Header>
             <wsse:Security S11:mustUnderstand="1" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
               #{timestamp}
-              <wsse:BinarySecurityToken wsu:Id="#{id}" ValueType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-x509-token-profile-1.0#X509v3" EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary">#{Base64.strict_encode64(certificate.to_der)}</wsse:BinarySecurityToken>
+              <wsse:BinarySecurityToken wsu:Id="#{uuid}" ValueType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-x509-token-profile-1.0#X509v3" EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary">#{Base64.strict_encode64(certificate.to_der)}</wsse:BinarySecurityToken>
               <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
                 #{signed_info}
                 <SignatureValue></SignatureValue>
                 <KeyInfo>
                   <wsse:SecurityTokenReference>
-                    <wsse:Reference ValueType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-x509-token-profile-1.0#X509v3" URI="##{id}" />
+                    <wsse:Reference ValueType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-x509-token-profile-1.0#X509v3" URI="##{uuid}" />
                   </wsse:SecurityTokenReference>
                 </KeyInfo>
               </Signature>
@@ -96,7 +76,7 @@ module SatMx
 
     private
 
-    attr_reader :certificate, :id
+    attr_reader :certificate
 
     def timestamp
       current_time = Time.now.utc
@@ -122,6 +102,10 @@ module SatMx
             </Reference>
         </SignedInfo>
       XML
+    end
+
+    def uuid
+      "uuid-#{@uuid}-1"
     end
   end
 end
