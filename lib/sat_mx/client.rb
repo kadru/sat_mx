@@ -13,19 +13,38 @@ module SatMx
       @access_token = access_token
     end
 
+    def download_request(payload)
+      HTTPX.post(
+        "https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/SolicitaDescargaService.svc",
+        headers: {
+          "SOAPAction" => "http://DescargaMasivaTerceros.sat.gob.mx/ISolicitaDescargaService/SolicitaDescarga"
+        }.merge(authorization)
+        .merge(HEADERS),
+        body: sign(payload)
+      )
+    end
+
     def verify_request(payload)
       HTTPX.post(
         "https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/VerificaSolicitudDescargaService.svc",
         headers: {
-          "Authorization" => "WRAP access_token=\"#{access_token}\"",
           "SOAPAction" => "http://DescargaMasivaTerceros.sat.gob.mx/IVerificaSolicitudDescargaService/VerificaSolicitudDescarga"
-        }.merge(HEADERS),
-        body: Signer.sign(document: payload, private_key:)
+        }.merge(authorization)
+        .merge(HEADERS),
+        body: sign(payload)
       )
     end
 
     private
 
     attr_reader :private_key, :access_token
+
+    def authorization
+      {"Authorization" => "WRAP access_token=\"#{access_token}\""}
+    end
+
+    def sign(payload)
+      Signer.sign(document: payload, private_key:)
+    end
   end
 end

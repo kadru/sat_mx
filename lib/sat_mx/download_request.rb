@@ -1,19 +1,8 @@
 require "httpx"
 require "xmldsig"
-require "sat_mx/download_request_body"
 
 module SatMx
   class DownloadRequest
-    URL = "https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/SolicitaDescargaService.svc"
-    HEADERS = {
-      "Content-type" => "text/xml; charset=utf-8",
-      "Accept" => "text/xml",
-      "SOAPAction" => "http://DescargaMasivaTerceros.sat.gob.mx/ISolicitaDescargaService/SolicitaDescarga"
-    }.freeze
-
-    private_constant :URL
-    private_constant :HEADERS
-
     def self.call(start_date:,
       end_date:,
       request_type:,
@@ -33,25 +22,17 @@ module SatMx
           requester_rfc:,
           certificate:
         ),
-        private_key: private_key,
-        access_token: access_token
+        client: Client.new(private_key:, access_token:)
       ).call
     end
 
-    def initialize(download_request_body:, private_key:, access_token:)
+    def initialize(download_request_body:, client:)
       @download_request_body = download_request_body
-      @private_key = private_key
-      @access_token = access_token
+      @client = client
     end
 
     def call
-      response = HTTPX.post(
-        URL,
-        headers: {
-          "Authorization" => "WRAP access_token=\"#{access_token}\""
-        }.merge(HEADERS),
-        body: Signer.sign(document: xml_document, private_key:)
-      )
+      response = client.download_request(download_request_body.generate)
 
       case response.status
       when 200..299
@@ -68,10 +49,6 @@ module SatMx
 
     private
 
-    attr_reader :download_request_body, :private_key, :access_token
-
-    def xml_document
-      download_request_body.generate
-    end
+    attr_reader :download_request_body, :client
   end
 end

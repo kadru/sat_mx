@@ -6,6 +6,7 @@ module SatMx
   class Error < StandardError; end
   autoload(:Authentication, "sat_mx/authentication")
   autoload(:DownloadRequest, "sat_mx/download_request")
+  autoload(:DownloadRequestBody, "sat_mx/download_request_body")
   autoload(:VerifyRequest, "sat_mx/verify_request")
   autoload(:VerifyRequestBody, "sat_mx/verify_request_body")
   autoload(:BodySignature, "sat_mx/body_signature")
