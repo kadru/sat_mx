@@ -2,10 +2,10 @@
 
 module SatMx
   class DownloadPetition
-    def self.call(package_ids:, requester_rfc:, access_token:, certificate:, private_key:)
+    def self.call(package_id:, requester_rfc:, access_token:, certificate:, private_key:)
       new(
         body: DownloadPetitionBody.new(
-          package_ids:,
+          package_id:,
           requester_rfc:,
           certificate:
         ),
