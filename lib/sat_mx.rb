@@ -11,7 +11,6 @@ module SatMx
   autoload(:VerifyRequestBody, "sat_mx/verify_request_body")
   autoload(:DownloadPetition, "sat_mx/download_petition")
   autoload(:DownloadPetitionBody, "sat_mx/download_petition_body")
-  autoload(:BodySignature, "sat_mx/body_signature")
   autoload(:Body, "sat_mx/body")
   autoload(:Result, "sat_mx/result")
   autoload(:Signer, "sat_mx/signer")

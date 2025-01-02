@@ -1,8 +1,6 @@
-require "sat_mx/body_constants"
-
 module SatMx
   class VerifyRequestBody
-    include BodySignature
+    include Body
 
     def initialize(certificate:, request_id:, requester_rfc:)
       @certificate = certificate
@@ -11,23 +9,16 @@ module SatMx
     end
 
     def generate
-      Nokogiri::XML::Builder.new do |xml|
-        xml[S11].Envelope(
-          ENVELOPE_ATTRS
-        ) do
-          xml[S11].Header
-          xml[S11].Body do
-            xml[DES].VerificaSolicitudDescarga do
-              xml[DES].solicitud(
-                "IdSolicitud" => request_id,
-                "RfcSolicitante" => requester_rfc
-              ) do
-                signature(xml)
-              end
-            end
+      envelope do |xml|
+        xml[Body::DES].VerificaSolicitudDescarga do
+          xml[Body::DES].solicitud(
+            "IdSolicitud" => request_id,
+            "RfcSolicitante" => requester_rfc
+          ) do
+            signature(xml)
           end
         end
-      end.doc.root.to_xml
+      end
     end
 
     private

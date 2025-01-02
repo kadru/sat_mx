@@ -2,7 +2,7 @@ require "time"
 
 module SatMx
   class DownloadRequestBody
-    include BodySignature
+    include Body
 
     REQUEST_TYPES = {
       cfdi: "CFDI",
@@ -26,31 +26,24 @@ module SatMx
     end
 
     def generate
-      Nokogiri::XML::Builder.new do |xml|
-        xml[S11].Envelope(
-          ENVELOPE_ATTRS
-        ) do
-          xml[S11].Header
-          xml[S11].Body do
-            xml[DES].SolicitaDescarga do
-              xml[DES].solicitud(
-                "FechaInicial" => start_date,
-                "FechaFinal" => end_date,
-                "RfcEmisor" => issuing_rfc,
-                "RfcSolicitante" => requester_rfc,
-                "TipoSolicitud" => request_type
-              ) do
-                xml[DES].RfcReceptores do
-                  @recipient_rfcs.each do |rfc|
-                    xml[DES].RfcReceptor(rfc)
-                  end
-                end
-                signature(xml)
+      envelope do |xml|
+        xml[Body::DES].SolicitaDescarga do
+          xml[Body::DES].solicitud(
+            "FechaInicial" => start_date,
+            "FechaFinal" => end_date,
+            "RfcEmisor" => issuing_rfc,
+            "RfcSolicitante" => requester_rfc,
+            "TipoSolicitud" => request_type
+          ) do
+            xml[Body::DES].RfcReceptores do
+              @recipient_rfcs.each do |rfc|
+                xml[Body::DES].RfcReceptor(rfc)
               end
             end
+            signature(xml)
           end
         end
-      end.doc.root.to_xml
+      end
     end
 
     private

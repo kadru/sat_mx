@@ -1,11 +1,8 @@
 # frozen_string_literal: true
 
-require "sat_mx/body_constants"
-
 module SatMx
   class DownloadPetitionBody
     include Body
-    include BodySignature
 
     def initialize(package_id:, requester_rfc:, certificate:)
       @package_id = package_id
@@ -15,8 +12,8 @@ module SatMx
 
     def generate
       envelope do |xml|
-        xml[DES].PeticionDescargaMasivaTercerosEntrada do
-          xml[DES].peticionDescarga(
+        xml[Body::DES].PeticionDescargaMasivaTercerosEntrada do
+          xml[Body::DES].peticionDescarga(
             IdPaquete: package_id,
             RfcSolicitante: requester_rfc
           ) do
