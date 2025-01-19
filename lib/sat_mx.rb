@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "httpx"
 require_relative "sat_mx/version"
 
 module SatMx

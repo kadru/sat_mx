@@ -1,5 +1,3 @@
-require "httpx"
-
 module SatMx
   class Client
     HEADERS = {
@@ -39,6 +37,17 @@ module SatMx
         "https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/VerificaSolicitudDescargaService.svc",
         headers: {
           "SOAPAction" => "http://DescargaMasivaTerceros.sat.gob.mx/IVerificaSolicitudDescargaService/VerificaSolicitudDescarga"
+        }.merge(authorization)
+        .merge(HEADERS),
+        body: sign(payload)
+      )
+    end
+
+    def download_petition(payload)
+      HTTPX.post(
+        "https://cfdidescargamasiva.clouda.sat.gob.mx/DescargaMasivaService.svc",
+        headers: {
+          "SOAPAction" => "http://DescargaMasivaTerceros.sat.gob.mx/IDescargaMasivaTercerosService/Descargar"
         }.merge(authorization)
         .merge(HEADERS),
         body: sign(payload)

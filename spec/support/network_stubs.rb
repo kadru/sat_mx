@@ -103,6 +103,67 @@ module NetworkStubs
       )
   end
 
+  def stub_download_petition_success(access_token:)
+    stub_download_petition(access_token:)
+      .to_return(
+        status: 200,
+        headers: RESP_HEADERS,
+        body: <<~XML
+          <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+            <s:Header>
+              <h:respuesta CodEstatus="5000"
+                           Mensaje="Solicitud Aceptada"
+                           xmlns:h="http://DescargaMasivaTerceros.sat.gob.mx"
+                           xmlns="http://DescargaMasivaTerceros.sat.gob.mx"
+                           xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+            </s:Header>
+            <s:Body xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+              <RespuestaDescargaMasivaTercerosSalida xmlns="http://DescargaMasivaTerceros.sat.gob.mx">
+                <Paquete>dGhpcyBpcyBzdXBwb3NlZGx5IGEgYmFzZTY0IGVuY29kZWQgemlwIGZpbGU=</Paquete>
+              </RespuestaDescargaMasivaTercerosSalida>
+            </s:Body>
+          </s:Envelope>
+        XML
+      )
+  end
+
+  def stub_download_petition_failure(access_token:)
+    stub_download_petition(access_token:).to_return(
+      status: 200,
+      headers: RESP_HEADERS.merge("cache-control" => "private"),
+      body: <<~XML
+        <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+          <s:Header>
+            <h:respuesta CodEstatus="300" 
+                         Mensaje="Token invalido."
+                         xmlns:h="http://DescargaMasivaTerceros.sat.gob.mx"
+                         xmlns="http://DescargaMasivaTerceros.sat.gob.mx"
+                         xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+          </s:Header>
+          <s:Body xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+            <RespuestaDescargaMasivaTercerosSalida xmlns="http://DescargaMasivaTerceros.sat.gob.mx">
+              <Paquete/>
+            </RespuestaDescargaMasivaTercerosSalida>
+          </s:Body>
+        </s:Envelope>
+      XML
+    )
+  end
+
+  def stub_download_petition(access_token:)
+    stub_request(:post,
+      "https://cfdidescargamasiva.clouda.sat.gob.mx/DescargaMasivaService.svc")
+      .with(
+        headers: {
+          "Authorization" => "WRAP access_token=\"#{access_token}\"",
+          "SOAPAction" => "http://DescargaMasivaTerceros.sat.gob.mx/IDescargaMasivaTercerosService/Descargar"
+        }
+      )
+  end
+
   def stub_authentication_success
     stub_auth_service
       .to_return(

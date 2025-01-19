@@ -3,14 +3,15 @@
 $LOAD_PATH.unshift File.dirname(__FILE__)
 RSPEC_ROOT = File.dirname __FILE__
 
-require "sat_mx"
-require "debug"
 require "webmock/rspec"
+require "httpx/adapters/webmock"
+require "debug"
 require "timecop"
 require "support/matchers"
 require "support/fixture_helper"
 require "support/network_stubs"
 require "support/certificate"
+require "sat_mx"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
