@@ -1,0 +1,8 @@
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+  <s:Body xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <SolicitaDescargaResponse xmlns="http://DescargaMasivaTerceros.sat.gob.mx">
+      <SolicitaDescargaResult CodEstatus="300" Mensaje="Token invalido."/>
+    </SolicitaDescargaResponse>
+  </s:Body>
+</s:Envelope>

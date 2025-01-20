@@ -1,6 +1,3 @@
-require "httpx"
-require "xmldsig"
-
 module SatMx
   class DownloadRequest
     def self.call(start_date:,
@@ -36,10 +33,7 @@ module SatMx
 
       case response.status
       when 200..299
-        Result.new(success?: true,
-          value: response.xml.xpath("//xmlns:SolicitaDescargaResult",
-            xmlns: "http://DescargaMasivaTerceros.sat.gob.mx").attribute("IdSolicitud").value,
-          xml: response.xml)
+        check_body_status response.xml
       when 400..599
         Result.new(success?: false, value: nil, xml: response.xml)
       else
@@ -50,5 +44,24 @@ module SatMx
     private
 
     attr_reader :download_request_body, :client
+
+    def check_body_status(xml)
+      download_result_tag = xml.xpath("//xmlns:SolicitaDescargaResult",
+        xmlns: Body::NAMESPACE)
+      if download_result_tag.attr("CodEstatus").value == "5000"
+        Result.new(success?: true,
+          value: download_result_tag.attr("IdSolicitud").value,
+          xml: xml)
+      else
+        Result.new(
+          success?: false,
+          value: {
+            CodEstatus: download_result_tag.attr("CodEstatus").value,
+            Mensaje: download_result_tag.attr("Mensaje").value
+          },
+          xml:
+        )
+      end
+    end
   end
 end

@@ -52,6 +52,15 @@ module NetworkStubs
       )
   end
 
+  def stub_download_request_failure_codestatus_300
+    stub_download_request
+      .to_return(
+        status: 200,
+        headers: RESP_HEADERS,
+        body: fixture("download_request/failure_response_codestatus_300.xml")
+      )
+  end
+
   def stub_download_request
     stub_request(:post,
       "https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/SolicitaDescargaService.svc")
