@@ -1,5 +1,3 @@
-require "httpx"
-
 module SatMx
   class VerifyRequest
     STATUS = {
@@ -28,9 +26,7 @@ module SatMx
       response = client.verify_request(body.generate)
       case response.status
       when 200..299
-        Result.new(success?: true,
-          value: value(response.xml),
-          xml: response.xml)
+        check_body_status(response.xml)
       when 400..599
         Result.new(success?: false, value: nil, xml: response.xml)
       else
@@ -42,16 +38,31 @@ module SatMx
 
     attr_reader :body, :client
 
-    def value(xml)
+    def check_body_status(xml)
+      download_result_tag = xml.xpath("//xmlns:VerificaSolicitudDescargaResult",
+        xmlns: Body::NAMESPACE)
+      if download_result_tag.attr("CodEstatus").value == "5000"
+        Result.new(success?: true,
+          value: value(download_result_tag, xml),
+          xml: xml)
+      else
+        Result.new(
+          success?: false,
+          value: {
+            CodEstatus: download_result_tag.attr("CodEstatus").value,
+            Mensaje: download_result_tag.attr("Mensaje").value
+          },
+          xml:
+        )
+      end
+    end
+
+    def value(tag, xml)
       {
         request_status: STATUS.fetch(
-          xml.xpath(
-            "//xmlns:VerificaSolicitudDescargaResult",
-            xmlns: "http://DescargaMasivaTerceros.sat.gob.mx"
-          )
-          .attribute("EstadoSolicitud").value
+          tag.attribute("EstadoSolicitud").value
         ),
-        package_ids: xml.xpath("//xmlns:IdsPaquetes", xmlns: "http://DescargaMasivaTerceros.sat.gob.mx").map(&:inner_text)
+        package_ids: xml.xpath("//xmlns:IdsPaquetes", xmlns: Body::NAMESPACE).map(&:inner_text)
       }
     end
   end
