@@ -1,19 +1,6 @@
 require "spec_helper"
 
-RSpec.describe SatMx::Authentication do
-  let(:certificate) do
-    OpenSSL::X509::Certificate.new(
-      fixture("local_business/2526_mifiel_local_business.cer")
-    )
-  end
-
-  let(:private_key) do
-    OpenSSL::PKey::RSA.new(
-      fixture("local_business/2526_mifiel_local_business.key"),
-      "12345678a"
-    )
-  end
-
+RSpec.describe SatMx::Authentication, :with_certificate do
   let(:success_response) do
     Nokogiri::XML::Document.parse(fixture("authentication/success_response.xml"))
   end
@@ -31,6 +18,7 @@ RSpec.describe SatMx::Authentication do
 
     it "returns the authenticate response" do
       stub_authentication_success
+
       result = SatMx::Authentication.authenticate(
         certificate:,
         private_key:,
@@ -49,7 +37,6 @@ RSpec.describe SatMx::Authentication do
         result = SatMx::Authentication.authenticate(
           certificate:,
           private_key:,
-
           uuid: "17368d82-4a74-4bc2-8ed1-3e9e490e5433"
         )
 
