@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 RSpec.shared_context "certificate" do
   let(:certificate) do
     OpenSSL::X509::Certificate.new(

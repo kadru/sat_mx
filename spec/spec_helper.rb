@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 $LOAD_PATH.unshift File.dirname(__FILE__)
 RSPEC_ROOT = File.dirname __FILE__
 
