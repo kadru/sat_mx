@@ -10,7 +10,7 @@
   </s:Header>
   <s:Body>
     <AutenticaResponse xmlns="http://DescargaMasivaTerceros.gob.mx">
-      <AutenticaResult>eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE3Mjc3MzczMTAsImV4cCI6MTcyNzczNzkxMCwiaWF0IjoxNzI3NzM3MzEwLCJpc3MiOiJMb2FkU29saWNpdHVkRGVjYXJnYU1hc2l2YVRlcmNlcm9zIiwiYWN0b3J0IjoiMzAzMDMwMzAzMTMwMzAzMDMwMzAzMDM3MzAzMDMzMzkzMjMwMzgzOSJ9.wOLFgZBRCIy09aKJZD2hiAUt_TjPwHYCIDQCVzKP_78%26wrap_subject%3d3030303031303030303030373030333932303839</AutenticaResult>
+      <AutenticaResult>TOKEN</AutenticaResult>
     </AutenticaResponse>
   </s:Body>
 </s:Envelope>

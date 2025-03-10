@@ -26,7 +26,7 @@ RSpec.describe SatMx::Authentication, :with_certificate do
       )
 
       expect(result).to be_success
-      expect(result.value).to eq("eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE3Mjc3MzczMTAsImV4cCI6MTcyNzczNzkxMCwiaWF0IjoxNzI3NzM3MzEwLCJpc3MiOiJMb2FkU29saWNpdHVkRGVjYXJnYU1hc2l2YVRlcmNlcm9zIiwiYWN0b3J0IjoiMzAzMDMwMzAzMTMwMzAzMDMwMzAzMDM3MzAzMDMzMzkzMjMwMzgzOSJ9.wOLFgZBRCIy09aKJZD2hiAUt_TjPwHYCIDQCVzKP_78%26wrap_subject%3d3030303031303030303030373030333932303839")
+      expect(result.value).to eq("TOKEN")
       expect(result.xml).to be_same_xml(success_response)
     end
 
