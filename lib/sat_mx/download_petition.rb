@@ -41,8 +41,8 @@ module SatMx
             success?: false,
             xml: response.xml,
             value: {
-              CodEstatus: response_tag["CodEstatus"],
-              Mensaje: response_tag["Mensaje"]
+              cod_estatus: response_tag["CodEstatus"],
+              mensaje: response_tag["Mensaje"]
             }
           )
         end
