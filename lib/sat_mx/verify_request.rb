@@ -49,8 +49,8 @@ module SatMx
         Result.new(
           success?: false,
           value: {
-            CodEstatus: download_result_tag.attr("CodEstatus").value,
-            Mensaje: download_result_tag.attr("Mensaje").value
+            cod_status: download_result_tag.attr("CodEstatus").value,
+            mensaje: download_result_tag.attr("Mensaje").value
           },
           xml:
         )

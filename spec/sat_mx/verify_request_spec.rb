@@ -53,8 +53,8 @@ RSpec.describe SatMx::VerifyRequest, :with_certificate do
 
         expect(result).not_to be_success
         expect(result.value).to be_eql({
-          CodEstatus: "300",
-          Mensaje: "Token invalido."
+          cod_status: "300",
+          mensaje: "Token invalido."
         })
         expect(result.xml).to be_same_xml(parse_xml(verify_request_invalid_codEstatus))
       end
