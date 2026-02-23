@@ -1,6 +1,7 @@
 require "time"
 
 module SatMx
+  # @api private
   class DownloadRequestBody
     include Body
 

@@ -1,4 +1,5 @@
 module SatMx
+  # @api private
   class DownloadPetitionBody
     include Body
 

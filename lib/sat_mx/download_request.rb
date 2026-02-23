@@ -1,4 +1,5 @@
 module SatMx
+  # @api private
   class DownloadRequest
     def self.call(start_date:,
       end_date:,

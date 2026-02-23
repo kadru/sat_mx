@@ -1,4 +1,5 @@
 module SatMx
+  # @api private
   class VerifyRequest
     STATUS = {
       "1" => :accepted,

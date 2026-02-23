@@ -2,6 +2,7 @@ require "openssl"
 require "xmldsig"
 
 module SatMx
+  # @api private
   class Signer
     def self.sign(document:, private_key:)
       new(document:, private_key:).sign

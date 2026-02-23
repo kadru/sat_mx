@@ -1,4 +1,5 @@
 module SatMx
+  # @api private
   class DownloadPetition
     def self.call(package_id:, requester_rfc:, access_token:, certificate:, private_key:)
       new(

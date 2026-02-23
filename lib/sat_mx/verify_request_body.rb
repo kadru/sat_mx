@@ -1,4 +1,5 @@
 module SatMx
+  # @api private
   class VerifyRequestBody
     include Body
 

@@ -3,6 +3,7 @@ require "time"
 require "base64"
 
 module SatMx
+  # @api private
   class Authentication
     def self.authenticate(certificate:, private_key:, uuid: SecureRandom.uuid)
       new(
@@ -43,6 +44,7 @@ module SatMx
     attr_reader :xml_auth_body, :client
   end
 
+  # @api private
   class XmlAuthBody
     def initialize(certificate:, uuid:)
       @certificate = certificate

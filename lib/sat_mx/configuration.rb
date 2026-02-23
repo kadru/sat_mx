@@ -1,4 +1,5 @@
 module SatMx
+  # @api private
   Configuration = Data.define(:certificate, :private_key) do
     def initialize(certificate:, private_key:, password:)
       super(

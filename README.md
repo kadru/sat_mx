@@ -1,39 +1,98 @@
 # SatMx
 
-TODO: Delete this and the text below, and describe your gem
-
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/sat_mx`. To experiment with that code, run `bin/console` for an interactive prompt.
+Ruby client for SAT (Mexican Tax Administration) web services to download CFDI invoices.
 
 ## Installation
 
-TODO: Replace `UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG` with your gem name right after releasing it to RubyGems.org. Please do not do it earlier due to security reasons. Alternatively, replace this section with instructions to install your gem from git if you don't plan to release to RubyGems.org.
+```bash
+gem install sat_mx
+```
 
-Install the gem and add to the application's Gemfile by executing:
+Or add to your Gemfile:
 
-    $ bundle add UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
+```ruby
+gem "sat_mx"
+```
 
-If bundler is not being used to manage dependencies, install the gem by executing:
+## Configuration
 
-    $ gem install UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
+```ruby
+SatMx.configure do |config|
+  config[:certificate] = "path/to/certificate.cer"
+  config[:private_key] = "path/to/private.key"
+  config[:password] = "key_password"
+end
+```
 
 ## Usage
 
-TODO: Write usage instructions here
+```ruby
+# 1. Authenticate
+result = SatMx.authenticate
+raise "Auth failed" unless result.success?
 
-## Development
+token = result.value
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+# 2. Request download
+result = SatMx.download_request(
+  start_date: Time.new(2024, 1, 1),
+  end_date: Time.new(2024, 1, 31),
+  request_type: :cfdi,
+  issuing_rfc: "ABC010101ABC",
+  recipient_rfcs: ["XYZ020202XYZ"],
+  requester_rfc: "ABC010101ABC",
+  access_token: token
+)
+raise "Request failed" unless result.success?
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+request_id = result.value
 
-## Contributing
+# 3. Verify status (poll until ready)
+loop do
+  result = SatMx.verify_request(
+    request_id: request_id,
+    requester_rfc: "ABC010101ABC",
+    access_token: token
+  )
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/sat_mx. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/[USERNAME]/sat_mx/blob/master/CODE_OF_CONDUCT.md).
+  case result.value[:request_status]
+  when :finished
+    break result.value[:package_ids]
+  when :error, :rejected, :expired
+    raise "Request failed: #{result.value}"
+  end
+
+  sleep 5
+end
+
+# 4. Download packages
+package_ids.each do |package_id|
+  result = SatMx.download_petition(
+    package_id: package_id,
+    requester_rfc: "ABC010101ABC",
+    access_token: token
+  )
+
+  File.write("#{package_id}.zip", result.value) if result.success?
+end
+```
+
+## API
+
+| Method | Description |
+|--------|-------------|
+| `SatMx.configure` | Configure certificate and private key |
+| `SatMx.configuration` | Get current configuration |
+| `SatMx.authenticate` | Get access token |
+| `SatMx.download_request` | Request CFDI download |
+| `SatMx.verify_request` | Check request status |
+| `SatMx.download_petition` | Download package |
+
+All methods return a `Result` object with:
+- `success?` - Boolean indicating success
+- `value` - Data on success, error hash `{:cod_estatus, :mensaje}` on failure
+- `xml` - Raw XML response
 
 ## License
 
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
-
-## Code of Conduct
-
-Everyone interacting in the SatMx project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/sat_mx/blob/master/CODE_OF_CONDUCT.md).
+MIT
