@@ -1,6 +1,7 @@
 require "base64"
 
 module SatMx
+  # @api private
   module Body
     S11 = "S11"
     XMLNS = "xmlns"

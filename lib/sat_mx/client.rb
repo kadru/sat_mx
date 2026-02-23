@@ -1,4 +1,5 @@
 module SatMx
+  # @api private
   class Client
     HEADERS = {
       "content-type" => "text/xml; charset=utf-8",

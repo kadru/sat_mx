@@ -11,7 +11,7 @@ RSpec.describe SatMx::Authentication, :with_certificate do
 
   describe ".authenticate" do
     around do |example|
-      Timecop.freeze(Time.new(2024, 10, 1)) do
+      Timecop.freeze(Time.new(2024, 10, 1, 0, 0, 0, "-06:00")) do
         example.run
       end
     end

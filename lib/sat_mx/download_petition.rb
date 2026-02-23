@@ -1,4 +1,5 @@
 module SatMx
+  # @api private
   class DownloadPetition
     def self.call(package_id:, requester_rfc:, access_token:, certificate:, private_key:)
       new(
@@ -41,8 +42,8 @@ module SatMx
             success?: false,
             xml: response.xml,
             value: {
-              CodEstatus: response_tag["CodEstatus"],
-              Mensaje: response_tag["Mensaje"]
+              cod_estatus: response_tag["CodEstatus"],
+              mensaje: response_tag["Mensaje"]
             }
           )
         end

@@ -45,8 +45,8 @@ RSpec.describe SatMx::DownloadRequest, :with_certificate do
 
         expect(result).not_to be_success
         expect(result.value).to eq({
-          CodEstatus: "300",
-          Mensaje: "Token invalido."
+          cod_estatus: "300",
+          mensaje: "Token invalido."
         })
         expect(result.xml).to be_same_xml(failure_codstatus_body)
       end
