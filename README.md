@@ -33,14 +33,15 @@ raise "Auth failed" unless result.success?
 
 token = result.value
 
-# 2. Request download
-result = SatMx.download_request(
+# 2. Request download of received CFDI
+result = SatMx.download_request_received(
   start_date: Time.new(2024, 1, 1),
   end_date: Time.new(2024, 1, 31),
   request_type: :cfdi,
-  issuing_rfc: "ABC010101ABC",
-  recipient_rfcs: ["XYZ020202XYZ"],
+  recipient_rfc: "ABC010101ABC",
   requester_rfc: "ABC010101ABC",
+  issuing_rfc: "XYZ020202XYZ",
+  document_status: "Vigente",
   access_token: token
 )
 raise "Request failed" unless result.success?
@@ -84,7 +85,7 @@ end
 | `SatMx.configure` | Configure certificate and private key |
 | `SatMx.configuration` | Get current configuration |
 | `SatMx.authenticate` | Get access token |
-| `SatMx.download_request` | Request CFDI download |
+| `SatMx.download_request_received` | Request download of received CFDI |
 | `SatMx.verify_request` | Check request status |
 | `SatMx.download_petition` | Download package |
 
