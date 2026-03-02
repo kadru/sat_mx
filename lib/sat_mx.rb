@@ -7,6 +7,8 @@ module SatMx
   autoload(:Authentication, "sat_mx/authentication")
   autoload(:DownloadRequest, "sat_mx/download_request")
   autoload(:DownloadRequestBody, "sat_mx/download_request_body")
+  autoload(:DownloadRequestReceived, "sat_mx/download_request_received")
+  autoload(:DownloadRequestReceivedBody, "sat_mx/download_request_received_body")
   autoload(:VerifyRequest, "sat_mx/verify_request")
   autoload(:VerifyRequestBody, "sat_mx/verify_request_body")
   autoload(:DownloadPetition, "sat_mx/download_petition")
@@ -109,6 +111,71 @@ module SatMx
         issuing_rfc:,
         recipient_rfcs:,
         requester_rfc:,
+        access_token:,
+        certificate:,
+        private_key:
+      )
+    end
+
+    # Requests a download of received CFDI documents from the SAT web service SolicitaDescargaService with SOAPAction SolicitaDescargaRecibidos
+    #
+    #   result = SatMx.download_request_received(
+    #     start_date: Time.new(2024, 1, 1),
+    #     end_date: Time.new(2024, 1, 31),
+    #     request_type: :cfdi,
+    #     recipient_rfc: "ABC010101ABC",
+    #     requester_rfc: "ABC010101ABC",
+    #     access_token: "your_access_token"
+    #   )
+    #   if result.success?
+    #     puts "Request ID: #{result.value}"
+    #   else
+    #     puts "Request failed: #{result.value}"
+    #   end
+    #
+    # @param start_date [Time] Start date for the search range
+    # @param end_date [Time] End date for the search range
+    # @param request_type [Symbol] Type of request (:cfdi or :metadata)
+    # @param access_token [String] Authentication token from SatMx.authenticate
+    # @param recipient_rfc [String] RFC of the receiver (required)
+    # @param requester_rfc [String, nil] RFC of the requester (optional)
+    # @param issuing_rfc [String, nil] RFC of the issuer (optional)
+    # @param complement [String, nil] Complement type to filter (e.g., "nomina12", "pagos10")
+    #  This value is optional. If omitted, the SAT web service will return all documents.
+    # @param document_status [String, nil] Document status filter (Todos, Cancelados, Vigentes) defaults to Todos
+    # @param certificate [String, nil] Certificate object (uses configuration if nil)
+    # @param private_key [String, nil] Private key object (uses configuration if nil)
+    #
+    # @return [SatMx::Result] A Result object containing:
+    #   - success?: [Boolean] whether the request was successful
+    #   - value: [String, nil] the request ID if successful, or {cod_estatus:, mensaje:} on failure
+    #   - xml: [Nokogiri::XML::Document] the raw XML response from the service
+    #
+    # @see SatMx::DownloadRequestReceived
+    # @see SatMx::Result
+    def download_request_received(
+      access_token:,
+      start_date:,
+      end_date:,
+      request_type:,
+      recipient_rfc:,
+      issuing_rfc: nil,
+      requester_rfc: nil,
+      document_status: nil,
+      complement: nil,
+      **options
+    )
+      certificate = options[:certificate] || configuration.certificate
+      private_key = options[:private_key] || configuration.private_key
+      DownloadRequestReceived.call(
+        start_date:,
+        end_date:,
+        request_type:,
+        recipient_rfc:,
+        requester_rfc:,
+        issuing_rfc:,
+        complement:,
+        document_status:,
         access_token:,
         certificate:,
         private_key:

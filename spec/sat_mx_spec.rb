@@ -211,6 +211,95 @@ RSpec.describe SatMx do
     end
   end
 
+  describe ".download_request_received" do
+    let(:access_token) { "FAKE_ACCESS_TOKEN" }
+    let(:start_date) { Time.new(2024, 10, 1) }
+    let(:end_date) { Time.new(2024, 10, 21) }
+    let(:recipient_rfc) { "AAA010101AAA" }
+    let(:requester_rfc) { "AAA010101AAA" }
+
+    it "returns a successful result" do
+      stub_download_request_received_success
+
+      result = SatMx.download_request_received(
+        start_date:,
+        end_date:,
+        request_type: :cfdi,
+        recipient_rfc:,
+        access_token:
+      )
+
+      expect(result.success?).to be true
+      expect(result.value).to eq("a8129420-4f22-42b4-9a7f-0c193d89d09a")
+    end
+
+    it "returns failure when CodEstatus is not 5000" do
+      stub_download_request_received_failure_codestatus_300
+
+      result = SatMx.download_request_received(
+        start_date:,
+        end_date:,
+        request_type: :cfdi,
+        recipient_rfc:,
+        access_token:
+      )
+
+      expect(result.success?).to be false
+      expect(result.value).to eq({
+        cod_estatus: "300",
+        mensaje: "Usuario No Válido"
+      })
+    end
+
+    it "accepts requester_rfc, issuing_rfc, and complement as keyword args" do
+      stub_download_request_received_success
+
+      result = SatMx.download_request_received(
+        start_date:,
+        end_date:,
+        request_type: :cfdi,
+        recipient_rfc:,
+        requester_rfc:,
+        issuing_rfc: "MOCR690424NZ5",
+        complement: "nomina12",
+        access_token:
+      )
+
+      expect(result.success?).to be true
+    end
+
+    it "accepts document_status as keyword arg" do
+      stub_download_request_received_success
+
+      result = SatMx.download_request_received(
+        start_date:,
+        end_date:,
+        request_type: :cfdi,
+        recipient_rfc:,
+        document_status: "Cancelado",
+        access_token:
+      )
+
+      expect(result.success?).to be true
+    end
+
+    it "accepts certificate and private_key options" do
+      stub_download_request_received_success
+
+      result = SatMx.download_request_received(
+        start_date:,
+        end_date:,
+        request_type: :cfdi,
+        recipient_rfc:,
+        access_token:,
+        certificate: OpenSSL::X509::Certificate.new(fixture("local_business/2526_mifiel_local_business.cer")),
+        private_key: OpenSSL::PKey::RSA.new(fixture("local_business/2526_mifiel_local_business.key"), "12345678a")
+      )
+
+      expect(result.success?).to be true
+    end
+  end
+
   describe ".configuration" do
     it "configurates" do
       expect(SatMx.configuration.certificate).to eq(
