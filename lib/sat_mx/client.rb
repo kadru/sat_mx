@@ -33,6 +33,17 @@ module SatMx
       )
     end
 
+    def download_request_received(payload)
+      HTTPX.post(
+        "https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/SolicitaDescargaService.svc",
+        headers: {
+          "SOAPAction" => "http://DescargaMasivaTerceros.sat.gob.mx/ISolicitaDescargaService/SolicitaDescargaRecibidos"
+        }.merge(authorization)
+        .merge(HEADERS),
+        body: sign(payload)
+      )
+    end
+
     def verify_request(payload)
       HTTPX.post(
         "https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/VerificaSolicitudDescargaService.svc",
