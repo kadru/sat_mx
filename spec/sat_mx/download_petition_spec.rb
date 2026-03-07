@@ -17,7 +17,7 @@ RSpec.describe SatMx::DownloadPetition, :with_certificate do
 
       expect(result).to be_success
       expect(result.xml).to be_same_xml(expected_xml)
-      expect(result.value).to eq(base64_content)
+      expect(result.value).to eq(decoded_content)
     end
 
     context "when request fails with invalid CodEstatus" do
@@ -58,8 +58,8 @@ RSpec.describe SatMx::DownloadPetition, :with_certificate do
 
     private
 
-    def base64_content
-      "dGhpcyBpcyBzdXBwb3NlZGx5IGEgYmFzZTY0IGVuY29kZWQgemlwIGZpbGU="
+    def decoded_content
+      "this is supposedly a base64 encoded zip file"
     end
 
     def expected_xml

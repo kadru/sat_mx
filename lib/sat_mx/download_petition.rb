@@ -32,10 +32,12 @@ module SatMx
           Result.new(
             success?: true,
             xml: response.xml,
-            value: response.xml.xpath(
-              "//xmlns:Paquete",
-              xmlns: "http://DescargaMasivaTerceros.sat.gob.mx"
-            ).inner_text
+            value: Base64.decode64(
+              response.xml.xpath(
+                "//xmlns:Paquete",
+                xmlns: "http://DescargaMasivaTerceros.sat.gob.mx"
+              ).inner_text
+            )
           )
         else
           Result.new(
