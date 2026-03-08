@@ -167,7 +167,7 @@ RSpec.describe SatMx do
     let(:requester_rfc) { "AAA010101AAA" }
     let(:access_token) { "FAKE_ACCESS_TOKEN" }
 
-    it "returns a successful result with base64 content" do
+    it "returns a successful result with decoded zip content" do
       stub_download_petition_success(access_token:)
 
       result = SatMx.download_petition(
@@ -177,7 +177,7 @@ RSpec.describe SatMx do
       )
 
       expect(result.success?).to be true
-      expect(result.value).to eq("dGhpcyBpcyBzdXBwb3NlZGx5IGEgYmFzZTY0IGVuY29kZWQgemlwIGZpbGU=")
+      expect(result.value).to eq("this is supposedly a base64 encoded zip file")
     end
 
     it "returns failure when CodEstatus is not 5000" do
