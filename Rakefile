@@ -17,7 +17,7 @@ namespace :gem do
 
     version = File.read("lib/sat_mx/version.rb")[/>= (.+)/, 1]
     sh "git add Gemfile.lock"
-    sh "git add lib/sat_mx/version"
+    sh "git add lib/sat_mx/version.rb"
     sh "git commit -m \"Bump sat_mx to v#{version}\""
     sh "git push origin main"
     sh "gem release --tag --push"
